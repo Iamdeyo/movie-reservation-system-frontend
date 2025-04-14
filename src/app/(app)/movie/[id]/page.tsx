@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export default function Movie() {
   return (
-    <div className="mt-10 space-y-10">
-      <div className="flex flex-col gap-10 md:flex-row-reverse">
+    <div className="mt-10 space-y-10 mx-auto container">
+      <div className="flex flex-col gap-10 md:flex-row-reverse md:justify-between">
         <div className="grid gap-9 max-w-3xs">
           <div className="aspect-[250/375] w-full relative rounded-[1.25rem] overflow-hidden">
             <Image
@@ -38,7 +38,7 @@ export default function Movie() {
           </div>
         </div>
 
-        <div className="grid gap-10 md:gap-12">
+        <div className="grid gap-5">
           <div className="space-y-5">
             <h3 className="text-lg xs:text-xl sm:text-2xl md:text-4xl font-semibold">
               Showtimes
