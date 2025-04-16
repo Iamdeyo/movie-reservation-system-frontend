@@ -25,6 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useLoginDialog } from "@/context/login-provider";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 // Define the form schema with zod
 const formSchema = z.object({
@@ -39,6 +41,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function LoginDialog() {
   const { isLoginDialogOpen, closeLoginDialog } = useLoginDialog();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsetLoading] = useState(false);
 
   // Initialize the form
   const form = useForm<FormValues>({
@@ -50,11 +53,21 @@ export default function LoginDialog() {
   });
 
   // Handle form submission
-  function onSubmit(values: FormValues) {
-    console.log("Login attempt with:", values);
-    // Add your login logic here
-    // On success, you might want to close the dialog
-    // setOpen(false)
+  async function onSubmit({ email, password }: FormValues) {
+    setIsetLoading(true);
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    setIsetLoading(false);
+    if (result?.error) {
+      toast.error("Login failed:" + result?.code);
+    } else {
+      toast.success("Login Successful");
+      closeLoginDialog();
+    }
   }
 
   return (
@@ -122,6 +135,7 @@ export default function LoginDialog() {
 
             <Button
               type="submit"
+              disabled={isLoading}
               className="w-full h-12 text-white bg-emerald-400 hover:bg-emerald-500"
             >
               Login now
