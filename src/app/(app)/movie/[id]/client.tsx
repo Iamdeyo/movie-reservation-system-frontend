@@ -2,7 +2,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -38,6 +37,30 @@ function formatMinutesToHours(minutes: number): string {
   const mins: number = minutes % 60;
   return `${hrs}h ${mins}m`;
 }
+
+// Format date for display
+const formatDisplayDate = (dateString: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+// Format time for display
+const formatDisplayTime = (timeString: string) => {
+  if (!timeString) return "";
+  const [hours, minutes] = timeString.split(":");
+  const date = new Date();
+  date.setHours(parseInt(hours), parseInt(minutes));
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function Movie({ movie: initialMovie }: { movie: MovieData }) {
@@ -75,27 +98,15 @@ export default function Movie({ movie: initialMovie }: { movie: MovieData }) {
     fetchData();
   }, [sd, data.id]); // Re-run when sd or movie id changes
 
-  // Format date for display
-  const formatDisplayDate = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
-  // Format time for display
-  const formatDisplayTime = (timeString: string) => {
-    if (!timeString) return "";
-    const [hours, minutes] = timeString.split(":");
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const handleProceed = () => {
+    router.push(
+      "/seats?sd=" +
+        sd +
+        "&st=" +
+        selectedShowtime +
+        "&th=" +
+        data.showtimes.find(({ id }) => id === selectedShowtime)?.theater?.id
+    );
   };
 
   return (
@@ -242,12 +253,12 @@ export default function Movie({ movie: initialMovie }: { movie: MovieData }) {
                   *Seat selection can be done after this
                 </p>
 
-                <Link
-                  href={`/booking/${selectedShowtime}`}
+                <div
+                  onClick={handleProceed}
                   className={cn(buttonVariants(), "w-full")}
                 >
                   Proceed to Booking
-                </Link>
+                </div>
               </div>
             </div>
           )}
